@@ -11,6 +11,7 @@ jobs:
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
       flb-version: ${{ steps.load-envs.outputs.FLB_VERSION }}
+      short-sha: ${{ steps.get-short-sha.outputs.short-sha }}
 
     steps:
       - name: Checkout code
@@ -43,8 +44,8 @@ jobs:
 #     needs: envs
 #     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
 #     with:
-#       name: fluent-bit
+#       name: tpi/fluent-bit
 #       dockerfile: fluent-bit/Dockerfile
 #       context: .
 #       build-args: ${{ needs.envs.outputs.build-args }}
-#       tag: ${{ needs.envs.outputs.flb-version }}-${{github.commit.sha}}
+#       tag: ${{ needs.envs.outputs.flb-version }}-${{ needs.envs.outputs.short-sha }}
