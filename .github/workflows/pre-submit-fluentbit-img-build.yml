@@ -1,7 +1,8 @@
 name: Pre-submit Fluentbit Image Builder
 
 on:
-  pull_request:
+  pull_request_target:
+    types: [opened, synchronize]
 
 env:
   BUILD_MODE: release
