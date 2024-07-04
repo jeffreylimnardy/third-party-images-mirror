@@ -39,9 +39,6 @@ jobs:
       - name: get commit short sha
         id: get-short-sha
         run: echo "short-sha=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_OUTPUT
-
-      - name: check short sha output
-        run: echo ${{ steps.get-short-sha.outputs.short-sha }}
 #   build-image:
 #     needs: envs
 #     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
