@@ -1,10 +1,9 @@
 name: Pre-submit Fluentbit Image Builder
 
 on:
-  pull_request_target:
-
-env:
-  BUILD_MODE: release
+  push:
+    branches:
+      - main
 
 jobs:
   envs:
@@ -14,18 +13,8 @@ jobs:
       flb-version: ${{ steps.load-envs.outputs.FLB_VERSION }}
 
     steps:
-      - name: Echo current github workspace
-        run: echo $GITHUB_WORKSPACE
-
       - name: Checkout code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-
-      - name: Fetch new env file
-        run: |
-          git fetch origin ${{ github.event.pull_request.head.sha }}
-          git checkout ${{ github.event.pull_request.head.sha }} --no-overlay -- fluent-bit/envs
 
       - name: Prepare Envs
         id: prepare-envs
@@ -34,7 +23,6 @@ jobs:
           # this creates a multiline string with the envs. 
           # Everything between `build-args<<BUILD_ARGS` and BUILD_ARGS will be content of the build-args variable.
           echo 'build-args<<BUILD_ARGS'
-          echo "BUILD_MODE=${{ env.BUILD_MODE }}"
           cat fluent-bit/envs
           echo BUILD_ARGS
 
@@ -47,7 +35,7 @@ jobs:
 
       - name: get commit short sha
         id: get-short-sha
-        run: echo "short-sha=$(git rev-parse --short ${{ github.event.pull_request.head.sha }})" >> $GITHUB_OUTPUT
+        run: echo "short-sha=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_OUTPUT
 
       - name: check short sha output
         run: echo ${{ steps.get-short-sha.outputs.short-sha }}
