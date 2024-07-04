@@ -47,7 +47,7 @@ jobs:
 
       - name: get commit short sha
         id: get-short-sha
-        run: echo "sha_short$(git rev-parse --short ${{ github.event.pull_request.head.sha }})" >> $GITHUB_OUTPUT
+        run: echo "short-sha=(git rev-parse --short ${{ github.event.pull_request.head.sha }})" >> $GITHUB_OUTPUT
 
       - name: check short sha output
         run: echo ${{ steps.get-short-sha.outputs.short-sha }}
