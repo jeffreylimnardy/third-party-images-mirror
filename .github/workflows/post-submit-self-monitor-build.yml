@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
-      flb-version: ${{ steps.load-envs.outputs.FLB_VERSION }}
+      prometheus-version: ${{ steps.load-envs.outputs.PROMETHEUS_VERSION }}
       short-sha: ${{ steps.get-short-sha.outputs.short-sha }}
 
     steps:
@@ -50,4 +50,4 @@ jobs:
 #       dockerfile: telemetry-self-monitor/Dockerfile
 #       context: .
 #       build-args: ${{ needs.envs.outputs.build-args }}
-#       tag: ${{ needs.envs.outputs.flb-version }}-${{ needs.envs.outputs.short-sha }}
+#       tag: ${{ needs.envs.outputs.prometheus-version }}-${{ needs.envs.outputs.short-sha }}
