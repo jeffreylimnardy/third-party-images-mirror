@@ -4,6 +4,8 @@ on:
   pull_request_target:
     paths:
       - "fluent-bit/**"
+    types:
+      - ready_for_review
   push:
     branches:
       - main
