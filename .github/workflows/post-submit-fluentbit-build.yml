@@ -53,26 +53,19 @@ jobs:
         run: echo "build-tag=${{ steps.load-envs.outputs.FLB_VERSION }}-${{ steps.get-short-sha.outputs.short-sha }}" >> $GITHUB_OUTPUT
         if: github.event_name == 'push'
 
-  test-tag:
+  build-image:
     needs: envs
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: tpi/fluent-bit
+      dockerfile: fluent-bit/Dockerfile
+      context: .
+      build-args: ${{ needs.envs.outputs.build-args }}
+      tag: ${{ needs.envs.outputs.build-tag }}
+  list-images:
+    needs: build-image
     runs-on: ubuntu-latest
     steps:
-      - name: Test tag
+      - name: List images
         run: |
-          echo "${{ needs.envs.outputs.build-tag }}"
-  # build-image:
-  #   needs: envs
-  #   uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-  #   with:
-  #     name: tpi/fluent-bit
-  #     dockerfile: fluent-bit/Dockerfile
-  #     context: .
-  #     build-args: ${{ needs.envs.outputs.build-args }}
-  #     tag: ${{ needs.envs.outputs.build-tag || '' }}
-  # list-images:
-  #   needs: build-image
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: List images
-  #       run: |
-  #         echo "${{ needs.build-image.outputs.images }}"
+          echo "${{ needs.build-image.outputs.images }}"
