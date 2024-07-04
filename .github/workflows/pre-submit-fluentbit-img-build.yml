@@ -2,7 +2,6 @@ name: Pre-submit Fluentbit Image Builder
 
 on:
   pull_request_target:
-    types: [opened, synchronize]
 
 env:
   BUILD_MODE: release
@@ -13,19 +12,27 @@ jobs:
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
       flb-version: ${{ steps.load-envs.outputs.FLB_VERSION }}
-      semver: ${{ steps.prepare-envs.outputs.semver }}
 
     steps:
       - name: Echo current github workspace
         run: echo $GITHUB_WORKSPACE
 
-      - name: Checkout code
+      - name: Checkout env file
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          sparse-checkout: fluent-bit/envs
 
-      - name: Echo github workspace after checkout
-        run: echo $GITHUB_WORKSPACE
+      - name: Checkout Dockerfile
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          sparse-checkout: fluent-bit/Dockerfile
+
+      - name: Echo files after checkout
+        run: |
+          cat fluent-bit/Dockerfile
+          cat fluent-bit/envs
 
       - name: Prepare Envs
         id: prepare-envs
@@ -44,3 +51,13 @@ jobs:
         id: load-envs
         run: |
           cat fluent-bit/envs >> "$GITHUB_OUTPUT"
+
+#   build-image:
+#     needs: envs
+#     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+#     with:
+#       name: fluent-bit
+#       dockerfile: fluent-bit/Dockerfile
+#       context: .
+#       build-args: ${{ needs.envs.outputs.build-args }}
+#       tag: ${{ needs.envs.outputs.flb-version }}
