@@ -1,4 +1,4 @@
-name: Post-submit Fluentbit Image Builder
+name: Fluentbit Image Builder
 
 on:
   pull_request_target:

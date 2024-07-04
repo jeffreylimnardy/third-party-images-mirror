@@ -1,6 +1,11 @@
-name: Post-submit Telemetry Self Monitor Image Builder
+name: Telemetry Self Monitor Image Builder
 
 on:
+  pull_request_target:
+    paths:
+      - "telemetry-self-monitor/**"
+    types:
+      - ready_for_review
   push:
     branches:
       - main
@@ -12,8 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       build-args: ${{ steps.prepare-envs.outputs.build-args }}
-      prometheus-version: ${{ steps.load-envs.outputs.PROMETHEUS_VERSION }}
-      short-sha: ${{ steps.get-short-sha.outputs.short-sha }}
+      build-tag: ${{ steps.build-tag.outputs.build-tag || '' }}
 
     steps:
       - name: Checkout code
@@ -31,6 +35,12 @@ jobs:
 
           } >> "$GITHUB_OUTPUT"
 
+      - name: Fetch new env file
+        run: |
+          git fetch origin ${{ github.event.pull_request.head.sha }}
+          git checkout ${{ github.event.pull_request.head.sha }} --no-overlay -- telemetry-self-monitor/envs
+        if: github.event_name == 'pull_request_target'
+
       - name: load envs into output
         id: load-envs
         run: |
@@ -39,19 +49,32 @@ jobs:
       - name: get commit short sha
         id: get-short-sha
         run: echo "short-sha=$(git rev-parse --short $GITHUB_SHA)" >> $GITHUB_OUTPUT
-  build-image:
+
+      - name: build image tag
+        id: build-tag
+        run: echo "build-tag=${{ steps.load-envs.outputs.PROMETHEUS_VERSION }}-${{ steps.get-short-sha.outputs.short-sha }}" >> $GITHUB_OUTPUT
+        if: github.event_name == 'push'
+  test-tag:
     needs: envs
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: tpi/telemetry-self-monitor
-      dockerfile: telemetry-self-monitor/Dockerfile
-      context: .
-      build-args: ${{ needs.envs.outputs.build-args }}
-      tag: ${{ needs.envs.outputs.prometheus-version }}-${{ needs.envs.outputs.short-sha }}
-  list-images:
-    needs: build-image
     runs-on: ubuntu-latest
     steps:
-      - name: List images
+      - name: Test tag
         run: |
-          echo "${{ needs.build-image.outputs.images }}"
+          echo "${{ needs.envs.outputs.build-tag }}"
+
+  # build-image:
+  #   needs: envs
+  #   uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+  #   with:
+  #     name: tpi/telemetry-self-monitor
+  #     dockerfile: telemetry-self-monitor/Dockerfile
+  #     context: .
+  #     build-args: ${{ needs.envs.outputs.build-args }}
+  #     tag: ${{ needs.envs.outputs.build-tag }}
+  # list-images:
+  #   needs: build-image
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: List images
+  #       run: |
+  #         echo "${{ needs.build-image.outputs.images }}"
