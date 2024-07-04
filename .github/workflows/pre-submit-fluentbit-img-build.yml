@@ -25,7 +25,7 @@ jobs:
       - name: Fetch new env file
         run: |
           git fetch origin ${{ github.event.pull_request.head.sha }}
-          git checkout origin/${{ github.event.pull_request.head.sha }} --no-overlay -- fluent-bit/envs
+          git checkout ${{ github.event.pull_request.head.sha }} --no-overlay -- fluent-bit/envs
 
       - name: Echo files after checkout
         run: |
