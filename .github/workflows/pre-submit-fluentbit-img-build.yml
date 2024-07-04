@@ -17,21 +17,10 @@ jobs:
       - name: Echo current github workspace
         run: echo $GITHUB_WORKSPACE
 
-      - name: Checkout env file
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          sparse-checkout: |
-            fluent-bit/envs
-          sparse-checkout-cone-mode: false
-
-      - name: Checkout Dockerfile
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.base.sha }}
-          sparse-checkout: |
-            fluent-bit/Dockerfile
-          sparse-checkout-cone-mode: false
+      - name: Fetch new env file
+        run: |
+          git fetch origin ${{ github.event.pull_request.head.sha }}
+          git checkout origin/${{ github.event.pull_request.head.sha }} --no-overlay -- fluent-bit/envs
 
       - name: Echo files after checkout
         run: |
