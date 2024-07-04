@@ -40,11 +40,18 @@ jobs:
         run: |
           cat telemetry-self-monitor/envs >> "$GITHUB_OUTPUT"
 
-#   build-image:
-#     needs: envs
-#     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-#     with:
-#       name: tpi/telemetry-self-monitor
-#       dockerfile: telemetry-self-monitor/Dockerfile
-#       context: .
-#       build-args: ${{ needs.envs.outputs.build-args }}
+  build-image:
+    needs: envs
+    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+    with:
+      name: tpi/telemetry-self-monitor
+      dockerfile: telemetry-self-monitor/Dockerfile
+      context: .
+      build-args: ${{ needs.envs.outputs.build-args }}
+  list-images:
+    needs: build-image
+    runs-on: ubuntu-latest
+    steps:
+      - name: List images
+        run: |
+          echo "${{ needs.build-image.outputs.images }}"
