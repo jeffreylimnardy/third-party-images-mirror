@@ -2,6 +2,8 @@ name: Pre-submit Telemetry Self Monitor Image Builder
 
 on:
   pull_request_target:
+    paths:
+      - "telemetry-self-monitor/**"
 
 jobs:
   envs:

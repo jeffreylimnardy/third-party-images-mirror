@@ -2,6 +2,8 @@ name: Pre-submit Fluentbit Image Builder
 
 on:
   pull_request_target:
+    paths:
+      - "fluent-bit/**"
 
 jobs:
   envs:
