@@ -66,19 +66,19 @@ jobs:
     steps:
       - name: print tag in its own job
         run: echo ${{ needs.envs.outputs.build-tag }}
-  build-image:
-    needs: envs
-    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
-    with:
-      name: tpi/fluent-bit
-      dockerfile: fluent-bit/Dockerfile
-      context:
-      build-args: ${{ needs.envs.outputs.build-args }}
-      tags: ${{ needs.envs.outputs.build-tag }}
-  list-images:
-    needs: build-image
-    runs-on: ubuntu-latest
-    steps:
-      - name: List images
-        run: |
-          echo "${{ needs.build-image.outputs.images }}"
+#  build-image:
+#    needs: envs
+#    uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
+#    with:
+#      name: tpi/fluent-bit
+#      dockerfile: fluent-bit/Dockerfile
+#      context:
+#      build-args: ${{ needs.envs.outputs.build-args }}
+#      tags: ${{ needs.envs.outputs.build-tag }}
+#  list-images:
+#    needs: build-image
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: List images
+#        run: |
+#          echo "${{ needs.build-image.outputs.images }}"
