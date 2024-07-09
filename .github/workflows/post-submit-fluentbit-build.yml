@@ -6,6 +6,9 @@ on:
       - "fluent-bit/**"
     types:
       - ready_for_review
+      - opened
+      - reopened
+      - synchronize
   push:
     branches:
       - main
@@ -55,15 +58,23 @@ jobs:
         run: echo "build-tag=${{ steps.load-envs.outputs.FLB_VERSION }}-${{ steps.get-short-sha.outputs.short-sha }}" >> $GITHUB_OUTPUT
         if: github.event_name == 'push'
 
+      - name: print image tag
+        run: echo ${{ steps.loads-env.outputs.FLB_VERSION }}
+  print-tag:
+    needs: envs
+    runs-on: ubuntu-latest
+    steps:
+      - name: print tag in its own job
+        run: echo ${{ needs.envs.outputs.build-tag }}
   build-image:
     needs: envs
     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
     with:
       name: tpi/fluent-bit
       dockerfile: fluent-bit/Dockerfile
-      context: .
+      context:
       build-args: ${{ needs.envs.outputs.build-args }}
-      tag: ${{ needs.envs.outputs.build-tag }}
+      tags: ${{ needs.envs.outputs.build-tag }}
   list-images:
     needs: build-image
     runs-on: ubuntu-latest
