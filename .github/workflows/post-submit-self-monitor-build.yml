@@ -59,13 +59,13 @@ jobs:
         if: github.event_name == 'push'
 
       - name: print image tag
-        run: echo ${{ steps.loads-env.outputs.FLB_VERSION }}
+        run: echo ${{ steps.load-envs.outputs.PROMETHEUS_VERSION }}
   print-tag:
     needs: envs
     runs-on: ubuntu-latest
     steps:
       - name: print tag in its own job
-        run: echo ${{ needs.envs.outputs.build-tag }}
+        run: echo ${{ needs.envs.outputs.build-args }}
 #   build-image:
 #     needs: envs
 #     uses: kyma-project/test-infra/.github/workflows/image-builder.yml@main
